@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  ClusterName:
+    Type: String
+    Description: EKS Cluster Name to create the access entry in.
+  AccessPrincipalArn:
+    Type: String
+    Description: ARN of the principal to provide access to the cluster.
+
+Resources:
+  AccessEntry:
+    Type: AWS::EKS::AccessEntry
+    Properties:
+      AccessPolicies:
+        - PolicyArn: arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy
+          AccessScope:
+               Type: 'cluster'
+      ClusterName: !Ref ClusterName
+      PrincipalArn: !Ref AccessPrincipalArn
