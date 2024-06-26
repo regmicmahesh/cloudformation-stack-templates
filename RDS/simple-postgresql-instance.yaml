@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  DBIdentifierName:
+    Description: Identifier for the Database Instance.
+    Type: String
+
+  DBUsername:
+    Description: Master username for the database.
+    Type: String
+    Default: postgresql
+
+  DBPassword:
+    Description: Master password for the database.
+    Type: String
+    NoEcho: true
+
+  SecurityGroupIds:
+    Description: Security Group Ids to attach in the instance.
+    Type: List<AWS::EC2::SecurityGroup::Id>
+
+  SubnetIds:
+    Description: Subnet Ids to deploy the instance into.
+    Type: List<AWS::EC2::Subnet::Id>
+
+  DBName:
+    Description: NAme of the initially created database .
+    Type: String
+
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W1011 # this check is makes sure the DBPassword is passed through SSM Parameter Store for security reasons which is not valid in this case.
+
+Resources:
+  Instance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: !Ref DBIdentifierName
+      DBName: !Ref DBName
+      Engine: postgres
+      MultiAZ: false
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      DBInstanceClass: db.t3.small
+      AllocatedStorage: "20"
+      DBSubnetGroupName: !Ref SubnetGroup
+      VPCSecurityGroups: !Ref SecurityGroupIds
+
+  SubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub ${DBIdentifierName}SubnetGroup
+      DBSubnetGroupDescription: !Sub DB Subnet Group for Private Subnet - ${DBIdentifierName}
+      SubnetIds: !Ref SubnetIds
+
+Outputs:
+  InstanceID:
+    Description: RDS
+    Value: !Ref Instance
+
+  Endpoint:
+    Description: RDS
+    Value: !GetAtt Instance.Endpoint.Address
