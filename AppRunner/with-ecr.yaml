@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: 'AWS CloudFormation Sample Template AppRunnerService: This template demonstrates the creation of a App Runner Service from existing ECR Repository.  **WARNING** This template creates an AWS App Runner Service. You will be billed for the AWS resources used if you create a stack from this template.'
+
+Metadata:
+  License: Apache-2.0
+
+Parameters:
+
+  ServiceName:
+    Type: String
+    Description: Name of the App Runner Service.
+
+  ECRImageUri:
+    Description: URL of the ECR Repository.
+    Type: String
+
+  Port:
+    Description: Port on which the container is listening.
+    Type: Number
+    Default: 80
+
+Resources:
+  AppRunnerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ServiceName}ECRAccessRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - build.apprunner.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:DescribeImages
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                Resource: '*'
+
+  AppRunner:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      InstanceConfiguration:
+            Cpu: 1024
+            Memory: 2048
+           
+      SourceConfiguration:
+        AutoDeploymentsEnabled: true
+
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerRole.Arn
+
+        ImageRepository:
+          ImageRepositoryType: ECR
+          ImageIdentifier: !Ref ECRImageUri
+          ImageConfiguration:
+            Port: !Ref Port
+
+Outputs:
+  AppRunner:
+    Description: URL of the deployed App Runner Service
+    Value: !Sub https://${AppRunner.ServiceUrl}
