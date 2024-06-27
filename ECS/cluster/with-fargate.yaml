@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: This stack deploys a Fargate cluster.
+
+Parameters:
+     ClusterName:
+      Type: String
+      Description: Name of the ECS Cluster.
+
+Resources:
+  ECSCluster:
+      Type: AWS::ECS::Cluster
+      Properties:
+           ClusterName: !Ref ClusterName
