@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  RepositoryName:
+    Type: String
+    Description: Name of the ECR Repository.
+
+Resources:
+  Repository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref RepositoryName
+      ImageScanningConfiguration:
+        ScanOnPush: "true"
+
+Outputs:
+  RepositoryArn:
+    Value: !GetAtt Repository.Arn
+  RepositoryUri:
+    Value: !GetAtt Repository.RepositoryUri
