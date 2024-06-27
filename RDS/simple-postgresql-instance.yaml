@@ -12,11 +12,11 @@ Parameters:
 
   SecurityGroupIds:
     Description: Security Group Ids to attach in the instance.
-    Type: List<AWS::EC2::SecurityGroup::Id>
+    Type: List<String>
 
   SubnetIds:
     Description: Subnet Ids to deploy the instance into.
-    Type: List<AWS::EC2::Subnet::Id>
+    Type: List<String>
 
   DBName:
     Description: Name of the initially created database.
