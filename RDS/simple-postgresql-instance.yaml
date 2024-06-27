@@ -5,11 +5,6 @@ Parameters:
     Description: Identifier for the Database Instance.
     Type: String
 
-  DBUsername:
-    Description: Master username for the database.
-    Type: String
-    Default: postgresql
-
   DBPassword:
     Description: Master password for the database.
     Type: String
@@ -24,8 +19,23 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
 
   DBName:
-    Description: NAme of the initially created database .
+    Description: Name of the initially created database.
     Type: String
+
+  DBUsername:
+    Description: Master username for the database.
+    Type: String
+    Default: postgresql
+  
+  DBInstanceClass:
+    Description: Instance class for the RDS instance.
+    Type: String
+    Default: db.t4g.small
+  
+  DBEngineVersion:
+    Description: Engine Version for the Database
+    Type: String
+    Default: "16.3"
 
 Metadata:
   cfn-lint:
@@ -42,10 +52,11 @@ Resources:
       DBInstanceIdentifier: !Ref DBIdentifierName
       DBName: !Ref DBName
       Engine: postgres
+      EngineVersion: !Ref DBEngineVersion
       MultiAZ: false
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
-      DBInstanceClass: db.t3.small
+      DBInstanceClass: !Ref DBInstanceClass
       AllocatedStorage: "20"
       DBSubnetGroupName: !Ref SubnetGroup
       VPCSecurityGroups: !Ref SecurityGroupIds
