@@ -12,12 +12,16 @@ Parameters:
   SubnetTwo:
     Type: String
     Description: Public Subnet Id Two to associate the load balancer into.
+  
+  LoadBalancerName:
+    Type: String
 
 
 Resources:
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      GroupName: !Sub "${LoadBalancerName}LoadBalancerSecurityGroup"
       GroupDescription: Access to the public facing load balancer
       VpcId: !Ref VpcId
       SecurityGroupIngress:
@@ -27,6 +31,7 @@ Resources:
   PublicLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
+      Name: !Ref LoadBalancerName
       Scheme: internet-facing
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
