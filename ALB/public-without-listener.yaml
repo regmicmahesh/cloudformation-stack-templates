@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  VpcId:
+    Type: String
+    Description: ID of the VPC to create LoadBalancer into.
+  
+  SubnetOne:
+    Type: String
+    Description: Public Subnet Id One to associate the load balancer into.
+
+  SubnetTwo:
+    Type: String
+    Description: Public Subnet Id Two to associate the load balancer into.
+
+
+Resources:
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the public facing load balancer
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: "-1"
+
+  PublicLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: "30"
+      Subnets:
+        - !Ref SubnetOne
+        - !Ref SubnetTwo
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
