@@ -83,6 +83,7 @@ Resources:
       ThumbprintList: # Required
         - "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
       Url: !GetAtt ControlPlane.OpenIdConnectIssuerUrl
+
   ManagedNodeGroup:
     Type: AWS::EKS::Nodegroup
     Properties:
@@ -142,3 +143,5 @@ Resources:
 Outputs:
      OIDCProviderArn:
       Value: !GetAtt OidcProvider.Arn
+     OpenIdConnectProviderUrlWithoutHttps:
+      Value: !Join [ '', !Split [ 'https://', !GetAtt  ControlPlane.OpenIdConnectIssuerUrl ] ]
