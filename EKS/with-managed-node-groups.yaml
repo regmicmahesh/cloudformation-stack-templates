@@ -75,6 +75,14 @@ Resources:
       RoleArn: !GetAtt EKSClusterRole.Arn
       Version: !Ref ClusterVersion
 
+  OidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      ClientIdList: 
+        - "sts.amazonaws.com"
+      ThumbprintList: # Required
+        - "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+      Url: !GetAtt ControlPlane.OpenIdConnectIssuerUrl
   ManagedNodeGroup:
     Type: AWS::EKS::Nodegroup
     Properties:
