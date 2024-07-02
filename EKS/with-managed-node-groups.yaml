@@ -138,3 +138,7 @@ Resources:
       ClusterName: !Ref ClusterName
       PreserveOnDelete: false
       ResolveConflicts: "OVERWRITE"
+
+Outputs:
+     OIDCProviderArn:
+      Value: !GetAtt OidcProvider.Arn
