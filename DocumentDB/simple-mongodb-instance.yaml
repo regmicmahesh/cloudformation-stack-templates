@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  DBResourceName:
+    Type: String
+    Description: Cluster Name and Instance Name are generated using this parameter.
+
+  SubnetOne:
+    Type: String
+    Description: Subnet ID to associate the cluster into.
+
+  SubnetTwo:
+    Type: String
+    Description: Subnet ID to associate the cluster into.
+
+  MasterUserPassword:
+    Type: String
+    NoEcho: true
+    Description: Master User Password for the cluster.
+
+  MasterUsername:
+    Type: String
+    NoEcho: true
+    Description: Master User Name for the cluster.
+
+  SecurityGroupId:
+    Type: String
+    Description: Security Group ID for the cluster.
+
+Resources:
+  DBSubnetGroup:
+    Type: AWS::DocDB::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Sub "${DBResourceName}SubnetGroup"
+      DBSubnetGroupName: !Sub "${DBResourceName}SubnetGroup"
+      SubnetIds:
+        - !Ref SubnetOne
+        - !Ref SubnetTwo
+
+  DBCluster:
+    Type: AWS::DocDB::DBCluster
+    Properties:
+      BackupRetentionPeriod: "7"
+      DBClusterIdentifier: !Sub "${DBResourceName}Cluster"
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DeletionProtection: false
+      MasterUserPassword: !Ref MasterUserPassword
+      MasterUsername: !Ref MasterUsername
+      StorageEncrypted: true
+      StorageType: "standard"
+      UseLatestRestorableTime: false
+      VpcSecurityGroupIds:
+        - !Ref SecurityGroupId
+
+  DBInstance:
+    Type: AWS::DocDB::DBInstance
+    Properties:
+      AutoMinorVersionUpgrade: true
+      DBClusterIdentifier: !Ref DBCluster
+      DBInstanceClass: "db.t3.medium"
+      DBInstanceIdentifier: !Ref DBResourceName
+      EnablePerformanceInsights: false
